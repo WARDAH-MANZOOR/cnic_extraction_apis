@@ -2,7 +2,7 @@
 /**
  * Module dependencies.
  */
-import app from '../app';
+import app from "../app.js";
 import debug from 'debug';
 import http from 'http';
 debug('spb:server');
@@ -67,7 +67,7 @@ function onListening() {
     var addr = server.address();
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
-        : 'port ' + addr.port;
+        : 'port ' + (addr ? addr.port : 'unknown');
     debug('Listening on ' + bind);
     console.log(`Server is listening on port ${port}`);
 }

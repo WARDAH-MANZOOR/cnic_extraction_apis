@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-import app from '../app';
+import app from "../app.js";
 import debug from 'debug';
 import http from 'http';
 
@@ -34,7 +34,7 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val: string) {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -54,7 +54,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error: { syscall: string; code: any; }) {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -86,7 +86,7 @@ function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
-    : 'port ' + addr.port;
+    : 'port ' + (addr ? addr.port : 'unknown');
   debug('Listening on ' + bind);
   console.log(`Server is listening on port ${port}`);
 }
