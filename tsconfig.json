@@ -11,6 +11,7 @@
     "esModuleInterop": true,   // Ensure compatibility with CommonJS modules
     "skipLibCheck": true,      // Skip type checking of declaration files
     "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"], // Include type definitions from node_modules and custom types
     "baseUrl": "./src",               // Set the base URL to your source directory
     "paths": {
       "*": ["*"]                      // Allow all paths to resolve from baseUrl

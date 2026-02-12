@@ -1,14 +1,26 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model CnicExtraction {
+  id                     Int      @id @default(autoincrement())
+  type                   String   // 'front-gemini', 'front-paddle', 'back-gemini'
+  name                   String?  
+  father_name            String?  
+  gender                 String?  
+  country                String?  
+  identity_number String? @unique
+  date_of_birth          DateTime?  
+  date_of_issue          DateTime?  
+  date_of_expiry         DateTime?  
+  present_address_urdu   String?  
+  present_address_eng    String?  
+  permanent_address_urdu String?  
+  permanent_address_eng  String?  
+  created_at             DateTime @default(now())
 }
