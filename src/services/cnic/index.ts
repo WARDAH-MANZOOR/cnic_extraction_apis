@@ -40,7 +40,6 @@ export const extractFrontData = async (imagePath: string) => {
 
 export const extractBackData = async (imagePath: string) => {
   const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-
   const imageBuffer = fs.readFileSync(imagePath);
 
   const result = await model.generateContent([
@@ -55,12 +54,19 @@ export const extractBackData = async (imagePath: string) => {
      Present Address English
      Permanent Address Urdu
      Permanent Address English
-     Also extract Identity Number.
-     Return in JSON format.`
+     Identity Number
+     Return strictly in JSON format.`
   ]);
-  console.log(result.response.text());
 
-  return JSON.parse(result.response.text());
+  let text = result.response.text();
+  text = text.replace(/```json|```/g, "").trim();
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("Failed to parse Gemini response:", text);
+    throw new Error("Invalid JSON from Gemini");
+  }
 };
 
 export default {

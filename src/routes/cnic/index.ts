@@ -4,7 +4,7 @@ import { upload } from "../../middleware/multer.js";
 
 const router = Router();
 
-router.post("/front", upload.single("image"), cnicExtractionController.uploadFront);
-router.post("/back", upload.single("image"), cnicExtractionController.uploadBack);
+router.post("/gemini-front", upload.single("image"), cnicExtractionController.uploadFront);
+router.post("/gemini-back", upload.single("image"), cnicExtractionController.uploadBack);
 
 export default router;
