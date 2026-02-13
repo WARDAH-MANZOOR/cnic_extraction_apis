@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from "fs";
+import { execFile } from "child_process";
+import path from "path";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -69,7 +71,39 @@ export const extractBackData = async (imagePath: string) => {
   }
 };
 
+
+
+
+export const extractFrontDataPaddleOCR = (imagePath: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const pythonScript = path.resolve("python/frontside-paddleocr.py");
+    const pythonExecutable = path.resolve(".venv/Scripts/python.exe");
+
+    execFile(pythonExecutable, [pythonScript, imagePath], (error, stdout, stderr) => {
+      if (error) {
+        console.error(stderr);
+        return reject("Python execution failed");
+      }
+
+      try {
+        const parsed = JSON.parse(stdout);
+        // Ensure Identity Number only numeric pattern
+        if (parsed["Identity Number"]) {
+          const match = parsed["Identity Number"].match(/\d{5}-\d{7}-\d{1}/);
+          parsed["Identity Number"] = match ? match[0] : "Not Found";
+        }
+        resolve(parsed);
+      } catch (err) {
+        console.error("Invalid JSON from Paddle:", stdout);
+        reject("Invalid JSON from PaddleOCR");
+      }
+    });
+  });
+};
+
+
 export default {
   extractFrontData,
-  extractBackData
+  extractBackData,
+  extractFrontDataPaddleOCR
 }

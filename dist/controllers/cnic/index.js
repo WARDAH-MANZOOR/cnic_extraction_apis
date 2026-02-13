@@ -81,7 +81,39 @@ export const uploadBack = async (req, res) => {
         res.status(500).json({ error: "Back extraction failed" });
     }
 };
+export const uploadFrontPaddleOCR = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+        const dataRaw = await cnicExtractionService.extractFrontDataPaddleOCR(req.file.path);
+        const dataForDB = {
+            identity_number: dataRaw["Identity Number"],
+            name: dataRaw["Name"],
+            father_name: dataRaw["Father Name"],
+            gender: dataRaw["Gender"],
+            country: dataRaw["Country"],
+            date_of_birth: formatDateForPrisma(dataRaw["Date of Birth"]),
+            date_of_issue: formatDateForPrisma(dataRaw["Date of Issue"]),
+            date_of_expiry: formatDateForPrisma(dataRaw["Date of Expiry"]),
+        };
+        const saved = await prisma.cnicExtraction.upsert({
+            where: { identity_number: dataForDB.identity_number },
+            update: dataForDB,
+            create: dataForDB,
+        });
+        res.json({
+            message: "Front-side data extracted successfully (PaddleOCR)",
+            data: dataRaw,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Paddle Front extraction failed" });
+    }
+};
 export default {
     uploadFront,
-    uploadBack
+    uploadBack,
+    uploadFrontPaddleOCR
 };

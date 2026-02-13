@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./python/frontside-",
+        "./python/frontside-"
+    ]
+}

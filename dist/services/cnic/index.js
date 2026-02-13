@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from "fs";
+import { execFile } from "child_process";
+import path from "path";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 export const extractFrontData = async (imagePath) => {
     const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
@@ -61,7 +63,29 @@ export const extractBackData = async (imagePath) => {
         throw new Error("Invalid JSON from Gemini");
     }
 };
+export const extractFrontDataPaddleOCR = (imagePath) => {
+    return new Promise((resolve, reject) => {
+        const pythonScript = path.resolve("python/frontside-paddleocr.py");
+        // <-- Change here: absolute path to your venv python
+        const pythonExecutable = path.resolve(".venv/Scripts/python.exe");
+        execFile(pythonExecutable, [pythonScript, imagePath], (error, stdout, stderr) => {
+            if (error) {
+                console.error(stderr);
+                return reject("Python execution failed");
+            }
+            try {
+                const parsed = JSON.parse(stdout);
+                resolve(parsed);
+            }
+            catch (err) {
+                console.error("Invalid JSON from Paddle:", stdout);
+                reject("Invalid JSON from PaddleOCR");
+            }
+        });
+    });
+};
 export default {
     extractFrontData,
-    extractBackData
+    extractBackData,
+    extractFrontDataPaddleOCR
 };
